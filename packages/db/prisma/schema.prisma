@@ -12,3 +12,94 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String    @id @default(uuid())
+  clerkId   String
+  email     String    @unique
+  isAdmin   Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Order     Order[]
+  CartItem  CartItem?
+}
+
+model Product {
+  id           String      @id @default(uuid())
+  description  String
+  price        Float
+  images       String[]
+  sizes        Size[]
+  colors       String[]
+  stock        Int
+  category     Category    @relation(fields: [categoryId], references: [id])
+  categoryId   String
+  collection   Collection? @relation(fields: [collectionId], references: [id])
+  collectionId String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  OrderItem    OrderItem[]
+  CartItem     CartItem[]
+}
+
+enum Size {
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+}
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String
+  products Product[]
+}
+
+model Collection {
+  id       String    @id @default(uuid())
+  name     String
+  products Product[]
+}
+
+model Order {
+  id         String      @id @default(uuid())
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String
+  orderItems OrderItem[]
+  total      Float
+  status     OrderStatus @default(PENDING)
+  createdAt  DateTime    @default(now())
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  size      Size
+  price     Float
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  size      Size
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
