@@ -5,7 +5,7 @@ import express, { Router } from "express";
 export const clerkWebhookRouter = Router();
 
 clerkWebhookRouter.post(
-  "/clerk/webhook",
+  "/webhook",
   express.raw({ type: "application/json" }),
   async (req, res) => {
     try {

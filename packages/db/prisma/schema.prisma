@@ -14,14 +14,15 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
+  id        String      @id @default(uuid())
   clerkId   String
-  email     String    @unique
-  isAdmin   Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  email     String      @unique
+  isAdmin   Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
   Order     Order[]
   CartItem  CartItem?
+  OrderItem OrderItem[]
 }
 
 model Product {
@@ -74,11 +75,13 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
+  id        String  @id @default(uuid())
   order     Order   @relation(fields: [orderId], references: [id])
   orderId   String
   product   Product @relation(fields: [productId], references: [id])
   productId String
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
   quantity  Int
   size      Size
   price     Float
